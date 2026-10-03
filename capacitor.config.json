@@ -2,5 +2,9 @@
   "appId": "com.heroes.future",
   "appName": "أبطال المستقبل",
   "webDir": "www",
-  "android": { "allowMixedContent": false }
+  "server": { "androidScheme": "https", "cleartext": false },
+  "android": {
+    "allowMixedContent": false,
+    "webContentsDebuggingEnabled": false
+  }
 }

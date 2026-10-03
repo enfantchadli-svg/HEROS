@@ -1,14 +1,17 @@
 {
   "name": "heroes-future",
   "productName": "أبطال المستقبل",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "description": "أبطال المستقبل",
   "main": "electron/main.js",
   "author": "Heroes",
   "scripts": {
     "start": "electron .",
-    "build:win": "electron-builder --win",
+    "check": "node scripts/check-security.cjs",
+    "keystore": "node scripts/make-keystore.cjs",
+    "build:win": "npm run check && electron-builder --win --publish never",
     "android:add": "cap add android",
+    "android:harden": "node scripts/android-harden.cjs",
     "android:sync": "cap sync android"
   },
   "dependencies": {
@@ -47,14 +50,24 @@
           ]
         }
       ],
-      "artifactName": "Heroes-${version}-${arch}.${ext}",
       "icon": "build/icon.ico"
     },
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "build/icon.ico",
-      "uninstallerIcon": "build/icon.ico"
+      "uninstallerIcon": "build/icon.ico",
+      "artifactName": "Heroes-Setup-${version}-${arch}.${ext}",
+      "perMachine": false
+    },
+    "asar": true,
+    "copyright": "Copyright © Heroes",
+    "portable": {
+      "artifactName": "Heroes-Portable-${version}-${arch}.${ext}"
     }
+  },
+  "private": true,
+  "engines": {
+    "node": ">=20"
   }
 }
