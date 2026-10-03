@@ -90,6 +90,15 @@ body[data-d=ios] #wd{min-width:0;max-width:100%}
 body[data-d=ios] #wd>*{max-width:100%;min-width:0}
 body[data-d=ios] #dk{max-width:calc(100% - 28px)}
 #wc{-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain}
+
+/* v0.8 fixes: phone scroll + editor */
+body[data-d=ios] #ph{position:fixed!important;inset:0;margin:0 auto;height:auto!important;max-width:430px;width:100%}
+body[data-d=ios] #hm{position:absolute!important;inset:0;height:auto!important;overflow-x:hidden;overflow-y:auto!important;-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain;padding-bottom:180px}
+body[data-d=mac] #hm{position:absolute;inset:0;overflow-y:auto}
+#wc{min-height:0;overflow-y:auto!important;touch-action:pan-y}
+textarea,input{-webkit-user-select:text;user-select:text;pointer-events:auto;touch-action:manipulation;font-size:16px}
+textarea{min-height:220px;height:260px;tab-size:4;-webkit-text-size-adjust:100%}
+.sym{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0;direction:ltr}.sym .chp{min-width:34px;margin:0;padding:8px 10px;font:700 16px monospace}
 </style></head><body>
 <div id="ph"><div class="bl b1"></div><div class="bl b2"></div><div class="bl b3"></div>
 <div id="sb"><span id="tm" dir="ltr"></span><span id="sr"></span></div>
@@ -99,7 +108,7 @@ body[data-d=ios] #dk{max-width:calc(100% - 28px)}
 <script>
 const $=s=>document.querySelector(s),R=n=>Math.random()*n|0,pk=a=>a[R(a.length)],rn=(a,b)=>a+R(b-a+1),shf=a=>a.sort(()=>Math.random()-.5);
 const h=(t,a={},...k)=>{const e=document.createElement(t);for(const[x,v]of Object.entries(a))x.startsWith('on')?e[x]=v:e.setAttribute(x,v);e.append(...k);return e};
-const DEF=()=>({stars:0,pl:1,el:1,best:0,own:[],eq:{},mi:0,sc:0,ex:0,gm:0}),num=(v,a,b,f)=>Number.isFinite(v)?Math.max(a,Math.min(b,v)):f;
+const DEF=()=>({stars:0,pl:1,el:1,sl:1,al:1,ch:[],best:0,own:[],eq:{},mi:0,sc:0,ex:0,gm:0}),num=(v,a,b,f)=>Number.isFinite(v)?Math.max(a,Math.min(b,v)):f;
 let S=DEF(),PRE='',DB={u:{},cur:'',rem:[],auto:false};
 try{const d=JSON.parse(localStorage.getItem('h3'));if(d&&d.u&&typeof d.u=='object'){DB.u=d.u;DB.cur=String(d.cur||'');DB.auto=!!d.auto;DB.rem=Array.isArray(d.rem)?d.rem.map(String).slice(0,20):[]}}catch(e){}
 const acc=n=>Object.hasOwn(DB.u,'u_'+n)?DB.u['u_'+n]:null,sv=()=>{try{const u=acc(DB.cur);if(u)u.s=S;u.la=Date.now();localStorage.setItem('h3',JSON.stringify(DB))}catch(e){}};
@@ -123,7 +132,7 @@ const GR=[[['She ___ a student.','is',['am','are','be']],['They ___ my friends.'
 [['She is ___ than her sister.','taller',['tallest','more tall','tall']],['The book is ___ the table.','on',['in','at','to']],['If it rains, I ___ stay home.','will',['would','am','did']],['He has lived here ___ 2010.','since',['for','from','at']],['This is the ___ day of my life.','best',['good','better','most good']]]];
 function QE(n){const t=Math.min(7,(n-1)/25|0);if(t<2||R(4)==0){const p=WD.slice(0,Math.min(WD.length,8+(n/7|0))),w=pk(p),d=R(2),a=w[d?1:0],s=new Set([a]);while(s.size<4)s.add(pk(WD)[d?1:0]);return{q:d?`ما معنى «${w[0]}»؟`:`كيف تقول «${w[1]}» بالإنجليزية؟`,c:'',o:shf([...s]),a,e:`${w[0]} = ${w[1]}`}}
 const it=pk(GR[t<4?0:t<6?1:2]);return{q:'أكمل الجملة: '+it[0],c:'',o:shf([it[1],...it[2]]),a:it[1],e:'الإجابة الصحيحة: '+it[1]}}
-const Q=(tr,n)=>tr=='p'?QP(n):QE(n);
+let Q=(tr,n)=>tr=='p'?QP(n):QE(n);
 function ask(list,fin){let i=0,ok=0;const box=h('div');
 const show=()=>{box.textContent='';const q=list[i];box.append(h('div',{class:'bar'},h('i',{style:`width:${i/list.length*100}%`})),h('h3',{},`${i+1}/${list.length}: ${q.q}`));if(q.c)box.append(h('pre',{},q.c));
 const fb=h('p'),nx=h('button',{class:'bt',hidden:''},i+1<list.length?'السؤال التالي':'عرض النتيجة');
@@ -131,7 +140,7 @@ q.o.forEach(o=>{const b=h('button',{class:'op'},String(o));b.onclick=()=>{box.qu
 box.append(fb,nx);nx.onclick=()=>++i<list.length?show():fin(ok)};show();return box}
 const res=(c,e,t,x,b,f)=>{if(e=='🏆')exDone();ST.pop();show(c=>c.append(h('div',{class:'cd c'},h('div',{class:'big'},e),h('h3',{},t),h('p',{},x),h('button',{class:'bt',onclick:f},b))))};
 /* ---- apps ---- */
-const AP=[['learn','🧒','تعلّم','#f59e0b,#ef4444'],['code','💻','المحرر','#22d3ee,#6366f1'],['quiz','❓','الأسئلة','#a855f7,#ec4899'],['lp','🧩','برمجة','#10b981,#22d3ee'],['le','🔤','إنجليزية','#f43f5e,#f59e0b'],['sc','🧱','سكراتش','#f59e0b,#fb923c'],['vid','🎬','فيديوهات','#ef4444,#f43f5e'],['ty','⌨️','الكتابة','#0ea5e9,#6366f1'],['gm','🎮','ابنِ لعبة','#22c55e,#14b8a6'],['shop','🛍️','المتجر','#f97316,#db2777'],['prof','🏅','ملفي','#eab308,#f97316'],['set','⚙️','الإعدادات','#64748b,#1e293b']];
+const AP=[['learn','🧒','تعلّم','#f59e0b,#ef4444'],['code','💻','المحرر','#22d3ee,#6366f1'],['quiz','❓','الأسئلة','#a855f7,#ec4899'],['lp','🧩','برمجة','#10b981,#22d3ee'],['le','🔤','إنجليزية','#f43f5e,#f59e0b'],['sl','🧱','مسار سكراتش','#f59e0b,#fb923c'],['al','🧠','خوارزميات','#14b8a6,#6366f1'],['sc','🧱','سكراتش','#f59e0b,#fb923c'],['vid','🎬','فيديوهات','#ef4444,#f43f5e'],['ty','⌨️','الكتابة','#0ea5e9,#6366f1'],['gm','🎮','ابنِ لعبة','#22c55e,#14b8a6'],['shop','🛍️','المتجر','#f97316,#db2777'],['prof','🏅','ملفي','#eab308,#f97316'],['set','⚙️','الإعدادات','#64748b,#1e293b']];
 const V={},W=$('#w'),PH=$('#ph'),WC=$('#wc');
 const LS=[['📦','المتغير','مثل صندوق عليه اسم: نضع فيه شيئاً ونستخرجه لاحقاً.','age = 8\nprint(age)'],['🔁','الحلقة','مثل الجري حول الملعب 5 مرات: نكرر العمل دون أن نكتبه 5 مرات.','for i in range(5):\n    print("run!")'],['🚦','الشرط','مثل إشارة المرور: إذا كانت خضراء نمشي، وإلا ننتظر.','light = "green"\nif light == "green":\n    print("go")\nelse:\n    print("wait")'],['📜','الدالة','مثل وصفة كعك: نكتبها مرة ونستعملها كلما أردنا.','def hello(name):\n    print("Hello", name)\nhello("Sara")'],['🚂','القائمة','مثل قطار عرباته مرقّمة من 0، وكل عربة تحمل شيئاً.','fruits = ["apple", "banana", "grape"]\nprint(fruits[0])'],['🐛','الأخطاء','الخطأ حشرة صغيرة في البرنامج: نقرأ الرسالة، نجد السطر، ثم نصلحه!','print("hi"']];
 V.learn=c=>{c.append(h('div',{class:'cd c'},h('div',{class:'big'},'🦉'),h('p',{},'أهلاً بطل! سأشرح لك البرمجة بأمثلة من حياتك.')));LS.forEach(([e,t,x,k])=>c.append(h('div',{class:'cd'},h('div',{class:'big'},e),h('h3',{},t),h('p',{},x),h('pre',{},k),h('button',{class:'bt',onclick:()=>{PRE=k;show(V.code)}},'جرّبه في المحرر'))))};
@@ -147,7 +156,7 @@ const run=()=>{const k=sel.value,v=ta.value;fr.srcdoc=k=='html'?v:k=='css'?`<sty
 const rate=()=>{const r=cx(ta.value,sel.value),g=Math.max(0,Math.round((r.s-S.best)/5));if(r.s>S.best){S.best=r.s;S.stars+=g;sv();st()}rep.textContent='';rep.append(h('div',{class:'cd'},h('h3',{},`${r.lv} — ${r.s}/100`),h('div',{class:'bar'},h('i',{style:`width:${r.s}%`})),h('p',{},`أسطر: ${r.L} • دوال: ${r.f} • حلقات: ${r.lp} • شروط: ${r.c} • أعمق تداخل: ${r.d}`),h('p',{},r.tip+(g?` ⭐ +${g}`:''))))};
 c.append(h('div',{class:'cd'},sel,ta,h('button',{class:'bt',onclick:run},'▶ شغّل'),' ',h('button',{class:'bt',onclick:rate,style:'background:#10b981'},'⭐ قيّم مشروعي'),fr),rep)};
 V.quiz=c=>{const g2=tr=>show(c=>{const n=S[tr=='p'?'pl':'el'];c.append(ask(Array.from({length:5},()=>Q(tr,n)),ok=>{const g=ok+(ok==5?5:0);S.stars+=g;sv();st();res(c,ok>=4?'🏆':'💪',`${ok} من 5`,`⭐ +${g}`,'رجوع',back)}))});c.append(h('div',{class:'cd c'},h('div',{class:'big'},'❓'),h('p',{},'5 أسئلة بمستواك الحالي، وكل إجابة صحيحة تمنحك نجمة.'),h('button',{class:'bt',onclick:()=>g2('p')},'🧩 برمجة'),' ',h('button',{class:'bt',onclick:()=>g2('e')},'🔤 إنجليزية')))};
-const LV=(tr,c)=>{const key=tr=='p'?'pl':'el';c.append(h('div',{class:'cd'},h('b',{},tr=='p'?'🧩 مسار البرمجة':'🔤 مسار الإنجليزية'),h('p',{},`مستواك ${S[key]} / 200 — المستويات 101 إلى 200 هي المستوى الأعلى الجديد 🔥`)));
+let LV=(tr,c)=>{const key=({p:'pl',e:'el',s:'sl',a:'al'})[tr];c.append(h('div',{class:'cd'},h('b',{},({p:'🧩 مسار البرمجة',e:'🔤 الإنجليزية A1→C2',s:'🧱 مسار سكراتش',a:'🧠 مسار الخوارزميات'})[tr]),h('p',{},`مستواك ${S[key]} / 200`+(tr=='e'?' — '+CF(S[key]):''))));
 const g=h('div',{class:'lg'});for(let n=1;n<=200;n++){const b=h('button',{class:'nd'+(n==S[key]?' cu':'')+(n>100?' x':''),'aria-label':'المستوى '+n},n>S[key]?'🔒':n<S[key]?'✅':String(n));b.onclick=()=>{if(n>S[key])return;show(c=>{c.append(h('h3',{},'المستوى '+n),ask(Array.from({length:3},()=>Q(tr,n)),ok=>{const w=ok>=2,nw=w&&n==S[key],r=5+(n/10|0);if(nw){S.stars+=r;if(n<200)S[key]++;sv();st()}res(c,w?'🏆':'💪',w?'نجحت!':'حاول مجدداً',`${ok} من 3`+(nw?` • ⭐ +${r}`:''),'رجوع للمستويات',back)}))})};g.append(b)}c.append(g);const cu=g.querySelector('.cu');cu&&setTimeout(()=>cu.scrollIntoView({block:'center'}),50)};
 V.lp=c=>LV('p',c);V.le=c=>LV('e',c);
 let SC='wp',SR='all',QS='';const rar=p=>[...RAR].reverse().find(r=>p>=r[3]);
@@ -402,5 +411,97 @@ let LST=-1;const st2=st;st=function(){const u=acc(DB.cur),p=u&&u.p;if(p){if(p.in
 const en0=enter;enter=function(n,k){LST=-1;en0(n,k)};setInterval(()=>{const u=acc(DB.cur);if(u&&u.p&&u.p.inf&&u.p.inf<=Date.now())st()},1000);
 /* ===== boot ===== */
 if(DB.auto&&acc(DB.cur))enter(DB.cur,true);else showLogin();
+</script>
+<script>
+/* ===== v0.8: levels, editor, music ===== */
+const xm=(q,a,w,e,c='')=>({q,c,o:shf([...new Set([a,...w])].slice(0,4)),a,e}),xn=(q,a,e,c='')=>({q,c,o:op(a),a,e});
+const CEF=['A1','A2','B1','B2','C1','C2'],CF=n=>CEF[Math.min(5,(n-1)/34|0)];
+const zEW=['apple:تفاحة,water:ماء,school:مدرسة,mother:أم,red:أحمر,happy:سعيد,house:بيت,book:كتاب,friend:صديق,eat:يأكل,cat:قطة,milk:حليب','airport:مطار,weather:طقس,borrow:يستعير,tired:متعب,kitchen:مطبخ,journey:رحلة,invite:يدعو,cheap:رخيص,island:جزيرة,wallet:محفظة,ticket:تذكرة,neighbour:جار','achieve:يحقق,advice:نصيحة,improve:يحسّن,environment:بيئة,suggest:يقترح,experience:خبرة,expensive:غالٍ,support:يدعم,society:مجتمع,decision:قرار,notice:يلاحظ,benefit:فائدة','consequence:عاقبة,reliable:موثوق,assume:يفترض,evidence:دليل,incredible:لا يصدّق,reluctant:متردد,sustainable:مستدام,enhance:يعزّز,perspective:منظور,overcome:يتغلب,obstacle:عقبة,genuine:أصيل','ambiguous:غامض,inevitable:حتمي,meticulous:دقيق جداً,scrutinize:يمحّص,resilient:مرن صلب,undermine:يقوّض,coherent:متماسك,mitigate:يخفف,pragmatic:عملي,substantiate:يثبت,notion:فكرة,advocate:يدعو إلى','ephemeral:زائل,ubiquitous:منتشر في كل مكان,obfuscate:يعمّي,serendipity:صدفة سعيدة,quintessential:المثال الأمثل,magnanimous:كريم النفس,perfunctory:شكلي,recalcitrant:عنيد,sycophant:متملق,laconic:مقتضب,ineffable:يصعب وصفه,juxtapose:يضع جنباً إلى جنب'].map(s=>s.split(',').map(x=>x.split(':')));
+const zEG=[[['She ___ a student.','is',['am','are']],['I ___ ten years old.','am',['is','are']],['This is ___ apple.','an',['a','the']],['They ___ my friends.','are',['is','am']]],[['Yesterday I ___ to school.','went',['go','goed']],['There ___ two cats.','are',['is','am']],['He is ___ than me.','taller',['tallest','more tall']],['She ___ TV now.','is watching',['watches','watch']]],[['If it rains, I ___ stay home.','will',['would','did']],['I have lived here ___ 2010.','since',['for','from']],['The book ___ written by him.','was',['were','did']],['You ___ smoke here.','mustn\'t',['don\'t must','needn\'t to']]],[['If I ___ rich, I would travel.','were',['am','will be']],['She suggested ___ early.','leaving',['to leave','leave']],['He denied ___ the window.','breaking',['to break','break']],['By noon, I ___ finished.','will have',['will','have been']]],[['Had I known, I ___ come.','would have',['will','would']],['Not only ___ late, he was rude.','was he',['he was','did he']],['I wish I ___ more time.','had',['have','would have']],['Seldom ___ such talent.','do we see',['we see','we do see']]],[['Were it not ___ your help, I would fail.','for',['by','of']],['So ___ was the noise that we left.','loud',['loudly','louder']],['He insisted that she ___ present.','be',['is','was']],['Little ___ he know what awaited him.','did',['does','has']]]];
+function QEn(n){const b=Math.min(5,(n-1)/34|0),t=R(5),W=zEW[b],all=W.concat(zEW[Math.max(0,b-1)],zEW[Math.min(5,b+1)]);
+if(t<2){const w=pk(W),a=w[t?1:0],s=new Set([a]);while(s.size<4)s.add(pk(all)[t?1:0]);return xm(t?`ما معنى «${w[0]}»؟ (${CEF[b]})`:`كيف تقول «${w[1]}» بالإنجليزية؟ (${CEF[b]})`,a,[...s],`${w[0]} = ${w[1]}`)}
+if(t==2){const w=pk(W)[0],a=w;let sc=w;for(let i=0;i<9&&sc==w;i++)sc=shf(w.split('')).join('');const s=new Set([a]);while(s.size<4)s.add(pk(W)[0]);return xm(`رتّب الحروف لتكوّن كلمة (${CEF[b]}): ${sc.split('').join(' - ')}`,a,[...s],`الكلمة هي ${a}`)}
+if(t==3){const w=pk(W)[0];return xn(`كم حرفاً في كلمة «${w}»؟`,w.length,`${w} = ${w.length} أحرف.`)}
+const g=pk(zEG[b]);return xm(`(${CEF[b]}) أكمل: ${g[0]}`,g[1],g[2],'الإجابة: '+g[1])}
+function QPy(n){const p=Math.min(9,(n-1)/20|0),k=((n-1)%20)>>2,r=p>1&&R(4)==0?R(p):p,mp={0:0,2:1,3:2,4:3,5:6,6:4,7:5};
+if(r in mp)return QP(mp[r]*25+1+k*4+R(3));
+if(r==1){const w=pk(['python','scratch','hero','future','coding','robot']),i=R(w.length-1),f=R(3),c=f==0?`s = "${w}"\nprint(s[${i}] + s[-1])`:f==1?`s = "${w}"\nprint(len(s) + ${k})`:`s = "${w}"\nprint(s[${i}:].upper())`;
+if(f==1)return{q:'ما الذي سيطبعه هذا البرنامج؟',c,...(a=>({o:op(a),a,e:'len تعدّ الأحرف ثم نضيف الرقم.'}))(w.length+k)};
+const a=f==0?w[i]+w[w.length-1]:w.slice(i).toUpperCase();return xm('ما الذي سيطبعه هذا البرنامج؟',a,[a.split('').reverse().join('')+'.',a.slice(1)+'!',a+a[0]],'الفهرس يبدأ من 0، والفهرس -1 هو آخر حرف.',c)}
+if(r==8){const x=rn(1,9),y=rn(1,9),m=rn(2,4+k);return xn('ما الذي سيطبعه هذا البرنامج؟',(x+y)*m,'نجمع قيمتي المفتاحين a و b ثم نضرب.',`d = {"a": ${x}, "b": ${y}}\nd["c"] = d["a"] + d["b"]\nprint(d["c"] * ${m})`)}
+if(R(2)){const N=rn(3,5+k);let f=1;for(let i=2;i<=N;i++)f*=i;return xn('ما الذي سيطبعه هذا البرنامج؟',f,`الدالة تستدعي نفسها: ${N}! = ${f}`,`def f(n):\n    if n <= 1:\n        return 1\n    return n * f(n - 1)\nprint(f(${N}))`)}
+const N=rn(3,6+k);let s=0;for(let i=0;i<N;i++)s+=i*i;return xn('ما الذي سيطبعه هذا البرنامج؟',s,`مجموع مربعات 0 إلى ${N-1}.`,`print(sum([i * i for i in range(${N})]))`)}
+const zSCQ=[['أي كتلة تُرسل رسالة لكل الكائنات؟','أذِع (broadcast)',['انتظر','كرّر','اذهب إلى']],['ما فائدة «عندما أستقبل رسالة»؟','تشغيل سكربت عند وصول رسالة',['رسم خط','تغيير الصوت','حذف الخلفية']],['ماذا يفعل «احذف هذا المستنسخ»؟','يزيل النسخة',['يخفي الخلفية','يوقف المشروع']],['كتلة «كرّر باستمرار» تعمل على','تكرار بلا نهاية',['تشغيل مرة واحدة','حفظ المتغيرات']],['ما الفرق بين المتغير والقائمة؟','القائمة تحمل عدة قيم',['المتغير يحمل عدة قيم','لا فرق']]];
+function QSc(n){const s=Math.min(9,(n-1)/20|0),k=1+((n%20)>>2),a=rn(2,5+k),b=rn(2,6),r=s>1&&R(4)==0?R(s):s;
+if(r==0)return xn(`«تحرّك ${a*5} خطوة» داخل «كرّر ${b}». كم خطوة يتحرك الشبح؟`,a*5*b,'نضرب الخطوات في عدد التكرارات.');
+if(r==1)return xn(`الشبح يواجه 90°. كرّرنا ${k+1} مرات «استدر يميناً ${a*15}°». ما الاتجاه (0–359)؟`,(90+a*15*(k+1))%360,'نجمع الدرجات ونأخذ الباقي على 360.');
+if(r==2){const sd=pk([3,4,5,6,8]),N={3:'مثلث',4:'مربع',5:'خماسي',6:'سداسي',8:'مثمّن'};return xm(`كرّر ${sd}: تحرّك 50 ثم استدر ${360/sd}°. ما الشكل؟`,N[sd],Object.values(N),'مجموع الدوران 360°.')}
+if(r==3)return xn(`اجعل «نقاط» = ${a}. كرّر ${b}: غيّر «نقاط» بمقدار ${k}. كم قيمة النقاط؟`,a+b*k,'القيمة الابتدائية + التغيير × التكرار.');
+if(r==4){const x=rn(1,9+k),y=rn(1,9+k);return xm(`نقاط = ${x}. إذا كانت نقاط > ${y} قل «فزت» وإلا قل «حاول». ماذا يقول الشبح؟`,x>y?'فزت':'حاول',['فزت','حاول','لا شيء'],'نقارن أولاً ثم نختار الفرع.')}
+if(r==5){const x=rn(-9,9),y=rn(-9,9),dx=rn(1,9),dy=rn(1,9),A=`(${x+dx}, ${y+dy})`;return xm(`الشبح عند (${x}, ${y}). غيّر x بمقدار ${dx} ثم y بمقدار ${dy}. ما موضعه؟`,A,[`(${y+dy}, ${x+dx})`,`(${x+dy}, ${y+dx})`,`(${x-dx}, ${y-dy})`],'x تتغير أفقياً وy عمودياً.')}
+if(r==6)return xn(`ما ناتج ${a*b+k} mod ${b} في سكراتش؟`,(a*b+k)%b,'mod يعطي الباقي بعد القسمة.');
+if(r==8)return xn(`كتلتك «مربع» تتحرك ${a*10} خطوة 4 مرات. استدعيناها ${b} مرات. كم خطوة؟`,40*a*b,'4 × الخطوات × عدد الاستدعاءات.');
+if(r==9&&R(2))return xn(`ينشئ الشبح ${a} نسخة كل ثانية لمدة ${b} ثوانٍ. كم نسخة؟`,a*b,'نسخ كل ثانية × عدد الثواني.');
+const q=pk(zSCQ);return xm(q[0],q[1],q[2],'الإجابة: '+q[1])}
+function QAl(n){const s=Math.min(9,(n-1)/20|0),k=1+((n%20)>>2),r=s>1&&R(4)==0?R(s):s,L=Array.from({length:3+k%3},()=>rn(1,9+k*3)),U=[...new Set(L)];
+if(r==0){const t=L.reduce((a,b)=>a+b,0);return xn('ما قيمة s في النهاية؟',t,'نجمع كل العناصر.',`L = [${L}]\ns = 0\nfor x in L:\n    s += x`)}
+if(r==1)return xn('ما قيمة m؟',Math.max(...L),'نحتفظ بأكبر قيمة رأيناها.',`L = [${L}]\nm = L[0]\nfor x in L:\n    if x > m:\n        m = x`);
+if(r==2){const i=R(U.length);return xn(`كم مقارنة يجريها البحث الخطي ليجد ${U[i]} في [${U}]؟`,i+1,'نقارن عنصراً عنصراً حتى نجده.')}
+if(r==3){const A=[...L];for(let i=0;i<A.length-1;i++)if(A[i]>A[i+1])[A[i],A[i+1]]=[A[i+1],A[i]];const f=x=>x.join(', ');return xm(`ما شكل القائمة بعد مرور واحد من الفرز الفقاعي؟ [${L}]`,f(A),[f(L),f([...L].reverse()),f([...L].sort((a,b)=>a-b))],'نقارن كل جارين ونبدّل، فيصعد الأكبر لآخر القائمة.')}
+if(r==4){const N=rn(8,16+k*8),A=Array.from({length:N},(_,i)=>i*2+1),t=A[R(N)];let lo=0,hi=N-1,c=0;while(lo<=hi){c++;const m=(lo+hi)>>1;if(A[m]==t)break;A[m]<t?lo=m+1:hi=m-1}return{q:`بحث ثنائي عن ${t} في ${N} عدداً مرتباً (1،3،5،...). كم خطوة؟`,c:'',o:op(c),a:c,e:'نأخذ المنتصف في كل مرة ونطرح نصف الباقي.'}}
+if(r==5){const st=[];let t='';for(let i=0;i<3+k;i++){const v=rn(1,9);st.push(v);t+=`push(${v})\n`;if(R(3)==0){st.pop();t+='pop()\n'}}if(!st.length){st.push(5);t+='push(5)\n'}return xn('ما العنصر في قمة المكدّس (stack) بعد التنفيذ؟',st[st.length-1],'المكدّس: آخر داخل أول خارج.',t)}
+if(r==6){let a=rn(12,60+k*20),b=rn(6,40+k*5);const A=a,B=b;while(b){[a,b]=[b,a%b]}return xn(`ما القاسم المشترك الأكبر لـ ${A} و ${B} (إقليدس)؟`,a,'نكرر: a,b = b, a % b حتى b = 0.')}
+if(r==7){const N=rn(3,7+k);let f=[0,1];for(let i=2;i<=N+2;i++)f.push(f[i-1]+f[i-2]);return xn(`فيبوناتشي: f(0)=0، f(1)=1، f(n)=f(n-1)+f(n-2). ما f(${N+2})؟`,f[N+2],'كل رقم مجموع السابقين.')}
+if(r==8){const P=[['for x in L:\n    print(x)','O(n)'],['print(L[0])','O(1)'],['for x in L:\n    for y in L:\n        print(x, y)','O(n²)'],['while n > 1:\n    n = n // 2','O(log n)'],['L.sort()','O(n log n)']],p=pk(P);return xm('ما تعقيد هذا الكود الزمني؟',p[1],['O(1)','O(n)','O(n²)','O(log n)','O(n log n)'],'التعقيد يصف نمو الزمن مع حجم المدخل n.',p[0])}
+const co=[25,10,5,1],A=rn(30,99+k*20);let m=A,c=0;co.forEach(v=>{c+=m/v|0;m%=v});return xn(`خوارزمية طمّاعة بقطع 25،10،5،1: كم قطعة لتكوين ${A}؟`,c,'نأخذ الأكبر ما أمكن ثم ننتقل للأصغر.')}
+const zSEEN=[],zUQ=f=>{let q;for(let i=0;i<14;i++){q=f();const k=q.q+q.c;if(!zSEEN.includes(k)){zSEEN.push(k);if(zSEEN.length>90)zSEEN.shift();break}}return q};
+Q=(tr,n)=>zUQ(()=>({p:QPy,e:QEn,s:QSc,a:QAl})[tr](n));
+V.sl=c=>{S.sl=S.sl||1;LV('s',c)};V.al=c=>{S.al=S.al||1;LV('a',c)};
+/* ---- code checker / complexity / stars ---- */
+const zVOID='area,base,br,col,embed,hr,img,input,link,meta,source,track,wbr'.split(',');
+function chk(s,k){const P=[],ln=s.split('\n');
+if(k=='js'||k=='ts'){try{new Function(k=='ts'?s.replace(/:\s*(number|string|boolean|any|void)(\[\])?/g,''):s)}catch(e){P.push([0,'خطأ بناء: '+e.message])}}
+ln.forEach((l,i)=>{if(/[“”‘’]/.test(l))P.push([i+1,'علامات اقتباس ذكية من لوحة المفاتيح؛ استبدلها بـ " أو \'']);if(/\t/.test(l)&&k=='py')P.push([i+1,'تاب في بايثون؛ استخدم 4 مسافات'])});
+if(k=='html'){const st=[],re=/<(\/?)([a-z][a-z0-9]*)[^>]*?(\/?)>/gi;let m;while(m=re.exec(s)){const t=m[2].toLowerCase(),L=s.slice(0,m.index).split('\n').length;if(zVOID.includes(t)||m[3])continue;if(!m[1])st.push([t,L]);else{const o=st.pop();if(!o||o[0]!=t)P.push([L,`الوسم </${t}> لا يطابق وسم فتح`])}}st.forEach(o=>P.push([o[1],`الوسم <${o[0]}> لم يُغلق`]))}
+else{const st=[],pr={')':'(',']':'[','}':'{'};ln.forEach((l,i)=>{let q='';for(let j=0;j<l.length;j++){const c=l[j];if(q){if(c=='\\')j++;else if(c==q)q='';continue}if(k=='py'&&c=='#')break;if(/js|ts/.test(k)&&c=='/'&&l[j+1]=='/')break;if(k!='css'&&('"\''.includes(c)||(c=='`'&&k!='py')))q=c;else if('([{'.includes(c))st.push([c,i+1]);else if(')]}'.includes(c)){const t=st.pop();if(!t||t[0]!=pr[c])P.push([i+1,`الرمز ${c} بلا قوس فتح مطابق`])}}if(q&&q!='`')P.push([i+1,'علامة اقتباس غير مغلقة'])});st.forEach(t=>P.push([t[1],`القوس ${t[0]} لم يُغلق`]))}
+if(k=='py'){let pv=null;ln.forEach((l,i)=>{const c=l.replace(/#.*$/,'').trimEnd(),t=c.trim();if(!t)return;const ind=l.match(/^ */)[0].length;if(pv&&ind<=pv[0])P.push([i+1,'السطر بعد النقطتين : يجب أن يُزاح إلى الداخل']);pv=null;if(/^(if|elif|else|for|while|def|class|try|except|finally|with)\b/.test(t)){if(!t.endsWith(':')&&!/[\(\[\{,]$/.test(t))P.push([i+1,'ينقص النقطتان : في نهاية السطر']);else pv=[ind]}if(/^print\s+["'\w]/.test(t))P.push([i+1,'استخدم print(...) بأقواس']);if(/^(if|elif|while)\s[^=!<>]*[^=!<>]=[^=]/.test(t))P.push([i+1,'للمقارنة استخدم == وليس =']);if(ind%4&&!/[\(\[\{,]\s*$/.test(ln[i-1]||''))P.push([i+1,'الإزاحة ليست مضاعف 4 مسافات'])})}
+if(k=='js'||k=='ts')ln.forEach((l,i)=>{if(/\b(if|while)\s*\([^=!<>)]*[^=!<>)]=[^=]/.test(l))P.push([i+1,'للمقارنة استخدم === وليس =']);if(/\bvar\b/.test(l))P.push([i+1,'نصيحة: استخدم let أو const بدل var'])});
+if(k=='css'){let d=0;ln.forEach((l,i)=>{const t=l.trim();if(t.includes('{'))d++;if(d&&t&&!/[{};]$/.test(t)&&!t.startsWith('/*'))P.push([i+1,'ينقص ; في نهاية الخاصية']);if(t.includes('}'))d=Math.max(0,d-1)})}
+return P.sort((a,b)=>a[0]-b[0])}
+function fx(s,k){s=s.replace(/[“”]/g,'"').replace(/[‘’]/g,"'").replace(/\t/g,k=='py'?'    ':'  ');
+if(k=='py')s=s.split('\n').map(l=>{const c=l.replace(/#.*$/,'').trim();return /^(if|elif|else|for|while|def|class|try|except|finally|with)\b/.test(c)&&!c.endsWith(':')&&!/[\(\[\{,]$/.test(c)?l.trimEnd()+':':l}).join('\n').replace(/^(\s*)print\s+(["'\w].*)$/gm,'$1print($2)');
+if(/py|js|ts/.test(k))s=s.replace(/^(\s*(?:if|elif|while)\b[^=\n!<>]*[^=!<>\n])=(?!=)/gm,'$1==');
+if(/js|ts|css/.test(k)){const st=[];let q='';for(const c of s){if(q){if(c==q)q='';continue}if(k!='css'&&'"\''.includes(c))q=c;else if('([{'.includes(c))st.push(c);else if(')]}'.includes(c))st.pop()}s+=st.reverse().map(c=>({'(':')','[':']','{':'}'})[c]).join('')}
+return s}
+function bo(s,k){const ln=s.split('\n'),lg=/(\/\/=?\s*2|\/=\s*2|>>=?\s*1|\*=\s*2)/.test(s),sr=/\b(sort|sorted)\b/.test(s);let mx=0,rec=0;
+[...s.matchAll(/(?:def|function)\s+(\w+)/g)].forEach(m=>{const c=(s.match(new RegExp('\\b'+m[1]+'\\s*\\(','g'))||[]).length-1;rec=Math.max(rec,c)});
+const stk=[];if(k=='py')ln.forEach(l=>{if(!l.trim())return;const ind=l.match(/^ */)[0].length;while(stk.length&&stk[stk.length-1]>=ind)stk.pop();if(/^\s*(for|while)\b/.test(l))stk.push(ind);mx=Math.max(mx,stk.length)});
+else ln.forEach(l=>{let pv=-1;for(let j=0;j<l.length;j++){const c=l[j];if(c=='{'){stk.push(/\b(for|while)\s*\(.*\)\s*$/.test(l.slice(pv+1,j))?1:0);mx=Math.max(mx,stk.reduce((a,b)=>a+b,0));pv=j}else if(c=='}'){stk.pop();pv=j}}});
+const L=['O(1)','O(log n)','O(n)','O(n log n)','O(n²)','O(n³)','O(2ⁿ)'];let i=mx==0?0:mx==1?(lg?1:2):mx==2?(lg?3:4):5;if(sr)i=Math.max(i,3);if(rec>=2)i=6;else if(rec==1)i=Math.max(i,2);return{o:L[i],i,d:mx,rec}}
+const zhsh=s=>{let x=0;for(const c of s.trim())x=(x*31+c.charCodeAt(0))|0;return x};
+V.code=c=>{S.ch=S.ch||[];let l='js',src=TPL.js;if(PRE){l='py';src=PRE;PRE=''}
+const sel=h('select',{'aria-label':'اللغة'},...Object.entries(LG).map(([k,v])=>h('option',{value:k},v))),ta=h('textarea',{dir:'ltr',spellcheck:'false',autocapitalize:'off',autocorrect:'off',autocomplete:'off',rows:'12','aria-label':'الكود'}),fr=h('iframe',{sandbox:'allow-scripts',title:'النتيجة'}),rep=h('div'),ind=()=>sel.value=='py'?'    ':'  ';sel.value=l;ta.value=src;
+const put=(t,p)=>{const a=ta.selectionStart,b=ta.selectionEnd;ta.setRangeText(t,a,b,'end');ta.selectionStart=ta.selectionEnd=a+(p??t.length)};
+ta.onkeydown=e=>{e.stopPropagation();if(e.key=='Tab'){e.preventDefault();put(ind())}else if(e.key=='Enter'){e.preventDefault();const v=ta.value,a=ta.selectionStart,cur=v.slice(v.lastIndexOf('\n',a-1)+1,a);put('\n'+cur.match(/^\s*/)[0]+(/[:{(\[]\s*$/.test(cur)?ind():''))}else if('([{'.includes(e.key)&&ta.selectionStart==ta.selectionEnd&&!e.ctrlKey){e.preventDefault();put(e.key+{'(':')','[':']','{':'}'}[e.key],1)}};
+const say=(...k)=>{rep.textContent='';rep.append(h('div',{class:'cd'},...k))};
+sel.onchange=()=>{ta.value=TPL[sel.value];rep.textContent='';fr.srcdoc=''};
+const run=()=>{const k=sel.value,v=ta.value;fr.srcdoc=k=='html'?v:k=='css'?`<style>${v}</style><h1>عنوان</h1><p>فقرة</p><button>زر</button>`:k=='js'?doc(v):k=='ts'?doc(v.replace(/:\s*(number|string|boolean|any|void)(\[\])?/g,'')):'<p dir=rtl style="font:15px sans-serif">بايثون: الفحص والتقييم متاحان، والتشغيل غير متاح هنا.</p>'};
+const check=()=>{const P=chk(ta.value,sel.value);say(h('h3',{},P.length?`🔍 ${P.length} ملاحظة`:'✅ لا أخطاء ظاهرة'),...P.map(p=>h('p',{style:'direction:rtl;margin:4px 0'},(p[0]?`سطر ${p[0]}: `:'')+p[1])));return P};
+const rate=()=>{const k=sel.value,v=ta.value,P=chk(v,k).filter(p=>!p[1].startsWith('نصيحة'));if(P.length)return say(h('h3',{},'🛠️ صحّح الأخطاء أولاً'),h('p',{},'لا نجوم لكود فيه أخطاء. اضغط «افحص».'));
+const r=cx(v,k),b=bo(v,k),T=[[85,15],[70,10],[50,6],[30,3],[10,1]],g0=(T.find(t=>r.s>=t[0])||[0,0])[1],H=zhsh(v),nw=!S.ch.includes(H),g=nw?g0:0;if(g){S.ch.push(H);S.ch=S.ch.slice(-300);S.stars+=g;S.best=Math.max(S.best,r.s);sv();st()}const n=Math.max(1,Math.ceil(r.s/20));
+say(h('h3',{},`${r.lv} — ${r.s}/100`),h('p',{style:'font-size:24px;margin:2px 0'},'★'.repeat(n)+'☆'.repeat(5-n)),h('div',{class:'bar'},h('i',{style:`width:${r.s}%`})),h('p',{},`⏱️ التعقيد التقريبي: ${b.o} • أعمق حلقات: ${b.d}${b.rec?' • تكرار ذاتي':''}`),h('p',{},`أسطر: ${r.L} • دوال: ${r.f} • حلقات: ${r.lp} • شروط: ${r.c}`),h('p',{},r.tip+(g?` ⭐ +${g}`:nw?'':' (هذا الكود نال نجومه من قبل — اكتب مشروعاً جديداً)')))};
+const sym=h('div',{class:'sym'},...['⇥','(',')','{','}','[',']','"',"'",':',';','=','#','_','<','>'].map(t=>h('button',{type:'button',class:'chp',onpointerdown:e=>e.preventDefault(),onclick:()=>{ta.focus();put(t=='⇥'?ind():t)}},t)));
+c.append(h('div',{class:'cd'},sel,ta,sym,h('button',{class:'bt',onclick:run},'▶ شغّل'),' ',h('button',{class:'bt',onclick:check,style:'background:#0ea5e9'},'🔍 افحص'),' ',h('button',{class:'bt',onclick:()=>{ta.value=fx(ta.value,sel.value);check()},style:'background:#f59e0b'},'🛠️ أصلح تلقائياً'),' ',h('button',{class:'bt',onclick:rate,style:'background:#10b981'},'⭐ قيّم'),fr),rep)};
+/* ---- music + more store items ---- */
+CAT.mu='🎵 موسيقى';const zSCL=[[0,2,4,5,7,9,11],[0,2,3,5,7,8,10],[0,2,4,7,9],[0,3,5,7,10]],zMN='الواحة|السحاب|الفجر|المطر|النجوم|الموج|الغيمة|الربيع'.split('|');
+for(let i=0;i<120;i++)IT.push({id:'mu'+i,c:'mu',n:'🎵 '+zMN[i%8]+' '+(1+(i/8|0)),p:20+i*4,e:'🎵',m:{r:50+(i*5)%14,s:i%4,t:240+(i*37)%260,x:i*7919+13}});
+const TAD='الشجاع|الذكي|السريع|النبيل|المبدع|الصبور|اللامع|الحكيم|المثابر|الجريء'.split('|'),TNN='المبرمج|المخترع|الرحّالة|الفارس|العالِم|الكاتب|البطل|القائد|المستكشف|الفنان'.split('|');
+TAD.forEach((a,i)=>TNN.forEach((n,j)=>IT.push({id:'tx'+i+'_'+j,c:'ti',n:n+' '+a,p:10+((i*3+j*5)%19)*9})));
+'🦁🐯🐻🦉🦅🐺🐲🦖🦈🐙🦋🐝🦜🦚🐢🦔🦦🦥🐧🦩🤖👾🧙🧛🧚🥷🧑‍🚀🦸‍♀️🦹🧞'.match(/\p{Extended_Pictographic}(\u200d\p{Extended_Pictographic}|\ufe0f)*/gu).forEach((e,i)=>IT.push({id:'ax'+i,c:'av',n:'بطل '+zMN[i%8]+' '+(i+1),p:25+i*6,e}));
+let zMT=null,zMID='',zUI=0;const zmstop=()=>{clearInterval(zMT);zMT=null};
+function zmplay(i,ms){zmstop();if(window.MUTE)return;try{AC=AC||new AudioContext();let sd=i.m.x;const rnd=()=>(sd=(sd*1103515245+12345)&0x7fffffff)/0x7fffffff,sc=zSCL[i.m.s],step=()=>{const t=AC.currentTime,o=AC.createOscillator(),g=AC.createGain();o.type=['sine','triangle','square','sawtooth'][i.m.s];o.frequency.value=440*2**((i.m.r+sc[rnd()*sc.length|0]+(rnd()<.25?12:0)-69)/12);g.gain.setValueAtTime(.04,t);g.gain.exponentialRampToValueAtTime(.001,t+.45);o.connect(g);g.connect(AC.destination);o.start(t);o.stop(t+.45)};step();zMT=setInterval(step,i.m.t);if(ms)setTimeout(()=>{zmstop();zMID=''},ms)}catch(e){}}
+const zpv1=prev;prev=i=>{if(i.c=='mu'){zmplay(i,6000);toast('🎵 معاينة «'+i.n+'» لمدة 6 ثوانٍ')}else zpv1(i)};
+const zst1=st;st=()=>{zst1();const m=eqi('mu');if(!m){zmstop();zMID=''}else if(zUI&&zMID!=m.id){zMID=m.id;zmplay(m)}};
+addEventListener('pointerdown',()=>{if(!zUI){zUI=1;st()}},{once:true});
 </script>
 </body></html>

@@ -1,7 +1,7 @@
 {
   "name": "heroes-future",
   "productName": "أبطال المستقبل",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "أبطال المستقبل",
   "main": "electron/main.js",
   "author": "Heroes",
