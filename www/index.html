@@ -77,6 +77,19 @@ html{scroll-behavior:smooth}#wc>*{animation:vin .4s cubic-bezier(.2,.8,.2,1) bot
 .stg{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;direction:ltr;background:#8882;padding:6px;border-radius:14px;margin:8px 0}.stg i{aspect-ratio:1;border-radius:8px;background:#8883;display:grid;place-items:center;font-size:24px;font-style:normal}
 .sb{font:inherit;font-weight:800;color:#fff;border:0;border-radius:10px;padding:7px 12px;margin:3px;cursor:pointer}.tg{color:#10b981}.tb{color:#ef4444;text-decoration:underline}
 body.cu,body.cu *{cursor:var(--cu)!important}
+
+/* ---- mobile fit fix ---- */
+html,body{height:100%;height:100dvh;overflow:hidden;overscroll-behavior:none}
+body[data-d=ios] #ph{width:100%;max-width:430px}
+@media(max-width:499px){body[data-d=ios] #ph{width:100%;height:100%;border-radius:0;box-shadow:none}}
+body[data-d=ios] #hm{grid-template-columns:repeat(4,minmax(0,1fr));height:100%;overflow-x:hidden;overflow-y:auto;align-content:start;padding-bottom:140px;-webkit-overflow-scrolling:touch;touch-action:pan-y;scrollbar-width:none}
+body[data-d=ios] #hm::-webkit-scrollbar{display:none}
+body[data-d=ios] #hm .ib,body[data-d=ios] #dk .ib{width:min(calc(70px*var(--is,1)),19vw);height:min(calc(70px*var(--is,1)),19vw)}
+body[data-d=ios] #hm .ic{max-width:100%;font-size:min(calc(14px*var(--is,1)),3.4vw);text-align:center}
+body[data-d=ios] #wd{min-width:0;max-width:100%}
+body[data-d=ios] #wd>*{max-width:100%;min-width:0}
+body[data-d=ios] #dk{max-width:calc(100% - 28px)}
+#wc{-webkit-overflow-scrolling:touch;touch-action:pan-y;overscroll-behavior:contain}
 </style></head><body>
 <div id="ph"><div class="bl b1"></div><div class="bl b2"></div><div class="bl b3"></div>
 <div id="sb"><span id="tm" dir="ltr"></span><span id="sr"></span></div>
