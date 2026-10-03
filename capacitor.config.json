@@ -1,0 +1,6 @@
+{
+  "appId": "com.heroes.future",
+  "appName": "أبطال المستقبل",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}

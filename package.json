@@ -1,0 +1,60 @@
+{
+  "name": "heroes-future",
+  "productName": "أبطال المستقبل",
+  "version": "0.7.0",
+  "description": "أبطال المستقبل",
+  "main": "electron/main.js",
+  "author": "Heroes",
+  "scripts": {
+    "start": "electron .",
+    "build:win": "electron-builder --win",
+    "android:add": "cap add android",
+    "android:sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.1.2",
+    "@capacitor/cli": "^6.1.2",
+    "@capacitor/core": "^6.1.2"
+  },
+  "devDependencies": {
+    "electron": "^31.0.0",
+    "electron-builder": "^24.13.3",
+    "@capacitor/assets": "^3.0.5"
+  },
+  "build": {
+    "appId": "com.heroes.future",
+    "productName": "أبطال المستقبل",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "electron/**",
+      "www/**",
+      "build/icon.png"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "artifactName": "Heroes-${version}-${arch}.${ext}",
+      "icon": "build/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico"
+    }
+  }
+}
